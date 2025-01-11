@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import com.personalproject.studentinformationportal.model.AddStudentResponse;
 import com.personalproject.studentinformationportal.model.DeleteResponse;
+import com.personalproject.studentinformationportal.model.UpdateResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,8 +22,8 @@ public class StudentInfoController {
 	@PostMapping("/student/add")
     public AddStudentResponse addStudent(@RequestBody StudentInfo studentInfo) {
 		AddStudentResponse addStudentResponse = new AddStudentResponse();
-		List<StudentInfo> students = studentInfoService.searchStudentByName(studentInfo.getName());
-		if(students.isEmpty()) {
+//		List<StudentInfo> students = studentInfoService.searchStudentByName(studentInfo.getName());
+//		if(students.isEmpty()) {
 			StudentInfo response = studentInfoService.addStudent(studentInfo);
 			if(response != null) {
 				addStudentResponse.setStudentInfo(studentInfo);
@@ -30,9 +31,9 @@ public class StudentInfoController {
 			} else {
 				addStudentResponse.setFailedMessage("Student added failed");
 			}
-		} else {
-			addStudentResponse.setFailedMessage("Student added failed because already exists");
-		}
+//		} else {
+//			addStudentResponse.setFailedMessage("Student added failed because already exists");
+//		}
 		return addStudentResponse;
 	}
 
@@ -55,4 +56,10 @@ public class StudentInfoController {
 	public DeleteResponse deleteStudent(@PathVariable int id)  {
 		return studentInfoService.deleteStudent(id);
 	}
+
+	@PatchMapping("/student/{id}")
+	public UpdateResponse updateStudent(@PathVariable int id, @RequestBody StudentInfo updatedStudentInfo)  {
+		return studentInfoService.updateStudent(id, updatedStudentInfo);
+	}
+
 }
