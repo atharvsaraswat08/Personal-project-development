@@ -6,6 +6,7 @@ import com.personalproject.studentinformationportal.model.AddStudentResponse;
 import com.personalproject.studentinformationportal.model.DeleteResponse;
 import com.personalproject.studentinformationportal.model.UpdateResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import com.personalproject.studentinformationportal.model.StudentInfo;
@@ -17,23 +18,24 @@ public class StudentInfoController {
 
 	@Autowired
 	private StudentInfoService studentInfoService;
-	
+
+	@Value("${x-admin-key}")
+	private String adminKey;
 	
 	@PostMapping("/student/add")
-    public AddStudentResponse addStudent(@RequestBody StudentInfo studentInfo) {
+    public AddStudentResponse addStudent(@RequestHeader(value="x-admin-key") String adminKeyInput, @RequestBody StudentInfo studentInfo) {
 		AddStudentResponse addStudentResponse = new AddStudentResponse();
-//		List<StudentInfo> students = studentInfoService.searchStudentByName(studentInfo.getName());
-//		if(students.isEmpty()) {
+		if (adminKeyInput == null || !adminKeyInput.equalsIgnoreCase(adminKey)) {
+			addStudentResponse.setFailedMessage("Invalid admin key or not authorized to add student");
+		} else {
 			StudentInfo response = studentInfoService.addStudent(studentInfo);
-			if(response != null) {
+			if (response != null) {
 				addStudentResponse.setStudentInfo(studentInfo);
 				addStudentResponse.setSuccessMessage("Student added successfully");
 			} else {
 				addStudentResponse.setFailedMessage("Student added failed");
 			}
-//		} else {
-//			addStudentResponse.setFailedMessage("Student added failed because already exists");
-//		}
+		}
 		return addStudentResponse;
 	}
 
@@ -53,13 +55,13 @@ public class StudentInfoController {
 	}
 
 	@DeleteMapping("/student/{id}")
-	public DeleteResponse deleteStudent(@PathVariable int id)  {
-		return studentInfoService.deleteStudent(id);
+	public DeleteResponse deleteStudent(@RequestHeader(value="x-admin-key") String adminKeyInput, @PathVariable int id)  {
+		return studentInfoService.deleteStudent(id, adminKeyInput);
 	}
 
 	@PatchMapping("/student/{id}")
-	public UpdateResponse updateStudent(@PathVariable int id, @RequestBody StudentInfo updatedStudentInfo)  {
-		return studentInfoService.updateStudent(id, updatedStudentInfo);
+	public UpdateResponse updateStudent(@PathVariable int id, @RequestBody StudentInfo updatedStudentInfo, @RequestHeader(value="x-admin-key") String adminKeyInput)  {
+		return studentInfoService.updateStudent(id, updatedStudentInfo, adminKeyInput);
 	}
 
 }

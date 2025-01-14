@@ -13,4 +13,7 @@ public class DeleteResponse {
         this.successMessage = successMessage;
         this.failedMessage = failedMessage;
     }
+
+    public DeleteResponse() {
+    }
 }
